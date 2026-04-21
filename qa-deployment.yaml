@@ -1,0 +1,25 @@
+# qa-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server
+  namespace: qa
+spec:
+  replicas: 2          # More replicas to mimic production
+  selector:
+    matchLabels:
+      app: web-server
+  template:
+    metadata:
+      labels:
+        app: web-server
+        env: qa
+    spec:
+      containers:
+      - name: web-server
+        image: nginx:stable   # Pinned tag for stability
+        ports:
+        - containerPort: 80
+        env:
+        - name: ENVIRONMENT
+          value: "qa"

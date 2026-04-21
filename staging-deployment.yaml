@@ -1,0 +1,25 @@
+# staging-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server
+  namespace: staging
+spec:
+  replicas: 2          # Multiple replicas for resilience
+  selector:
+    matchLabels:
+      app: web-server
+  template:
+    metadata:
+      labels:
+        app: web-server
+        env: staging
+    spec:
+      containers:
+      - name: web-server
+        image: nginx:latest   # Latest stable image
+        ports:
+        - containerPort: 80
+        env:
+        - name: ENVIRONMENT
+          value: "staging"
