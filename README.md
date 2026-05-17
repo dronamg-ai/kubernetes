@@ -12,6 +12,8 @@ This repository contains Kubernetes manifests for managing multi-environment dep
 ├── qa-service.yaml          # QA environment service
 ├── staging-deployment.yaml  # Staging environment deployment
 ├── staging-service.yaml     # Staging environment service
+├── grafana.yaml             # Grafana deployment and service
+├── prometheus.yaml          # Prometheus monitoring stack
 └── README.md               # This file
 ```
 
@@ -37,6 +39,11 @@ This repository contains Kubernetes manifests for managing multi-environment dep
 - **Service Type**: LoadBalancer
 - **Purpose**: Pre-production environment
 - **Access**: External LoadBalancer IP
+
+### Monitoring (monitoring)
+- **Components**: Prometheus & Grafana
+- **Purpose**: Cluster-wide metrics scraping and visualization
+- **Access**: LoadBalancer (or via port-forward)
 
 ## Prerequisites
 
@@ -100,6 +107,13 @@ kubectl apply -f staging-deployment.yaml staging-service.yaml
 kubectl apply -f .
 ```
 
+### Deploy Monitoring Stack
+
+```bash
+kubectl apply -f prometheus.yaml
+kubectl apply -f grafana.yaml
+```
+
 ## Verification
 
 ### Check Namespaces
@@ -153,6 +167,20 @@ kubectl get svc web-service -n qa
 ```bash
 kubectl get svc web-service -n staging
 # Access via: <EXTERNAL_IP>
+```
+
+### Monitoring (Prometheus & Grafana)
+
+If LoadBalancer stays in `<pending>` state (e.g. on Docker Desktop/Kind), use port-forward:
+
+```bash
+# Grafana
+kubectl port-forward service/grafana-service 3000:3000 -n monitoring
+# Access via: http://localhost:3000 (Default login: admin/admin)
+
+# Prometheus
+kubectl port-forward service/prometheus-service 9090:9090 -n monitoring
+# Access via: http://localhost:9090
 ```
 
 ## Managing Deployments
